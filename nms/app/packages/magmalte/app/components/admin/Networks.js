@@ -17,7 +17,6 @@
 import AddNetworkDialog from './AddNetworkDialog';
 import Button from '@fbcnms/ui/components/design-system/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
-import DialogWithConfirmationPhrase from '@fbcnms/ui/components/DialogWithConfirmationPhrase';
 import EditIcon from '@material-ui/icons/Edit';
 import EditNetworkDialog from './EditNetworkDialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -33,6 +32,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import axios from 'axios';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
 
 import useMagmaAPI from '@fbcnms/ui/magma/useMagmaAPI';
 import {Route} from 'react-router-dom';
@@ -55,6 +60,59 @@ const useStyles = makeStyles(() => ({
     height: '70vh',
   },
 }));
+
+/**
+ * Copyright 2004-present Facebook. All Rights Reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+
+
+type DialogConfirmationProps = {
+  title: string,
+  message: string,
+  confirmationPhrase: string,
+  label: string,
+  onClose: () => void,
+  onConfirm: () => void | Promise<void>,
+};
+
+function DialogWithConfirmationPhrase(props: DialogConfirmationProps) {
+  const [confirmationPhrase, setConfirmationPhrase] = useState('');
+  const {title, message, label, onClose, onConfirm} = props;
+
+  return (
+    <Dialog open={true} onClose={onClose} onExited={onClose} maxWidth="sm">
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {message}
+          <TextField
+            label={label}
+            value={confirmationPhrase}
+            onChange={({target}) => setConfirmationPhrase(target.value)}
+          />
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button skin="regular" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button
+          skin="red"
+          onClick={onConfirm}
+          disabled={confirmationPhrase !== props.confirmationPhrase}>
+          Confirm
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 function Networks() {
   const classes = useStyles();
